@@ -1,13 +1,20 @@
+from enum import Enum
+
 # Token types
 #
 # EOF (end-of-file) token is used to indicate that
 # there is no more input left for lexical analysis
-INTEGER, PLUS, EOF = 'INTEGER', 'PLUS', 'EOF'
+
+class TokenType(Enum):
+   INTEGER = 'INTEGER'
+   PLUS = 'PLUS'
+   MINUS = 'MINUS'
+   EOF = 'EOF'
+
 
 
 class Token(object):
-  def __init__(self, type, value):
-    # token type: INTEGER, PLUS, or EOF
+  def __init__(self, type: TokenType, value):
     self.type = type
     # token value: 0, 1, 2. 3, 4, 5, 6, 7, 8, 9, '+', or None
     self.value = value
@@ -73,19 +80,23 @@ class Interpreter(object):
       # index to point to the next character after the digit,
       # and return the INTEGER token
       if self.current_char == None:
-         return Token(EOF, None)
+         return Token(TokenType.EOF, None)
 
       if self.current_char == ' ':
          self.skip_white_space()
          return self.get_next_token()
       
       if self.current_char.isdigit():
-          return Token(INTEGER, self.integer())
+          return Token(TokenType.INTEGER, self.integer())
         
 
       if self.current_char == '+':
           self.advance()
-          return Token(PLUS, self.current_char)
+          return Token(TokenType.PLUS, self.current_char)
+      
+      if self.current_char == '-':
+         self.advance()
+         return Token(TokenType.MINUS, self.current_char)
       
 
 
@@ -110,18 +121,25 @@ class Interpreter(object):
 
       # we expect the current token to be an integer
       left = self.current_token
-      self.eat(INTEGER)
+      self.eat(TokenType.INTEGER)
 
       # we expect the current token to be a '+' token
       op = self.current_token
-      self.eat(PLUS)
+      match op.type:
+         case TokenType.PLUS: 
+            self.eat(TokenType.PLUS)
+         case TokenType.MINUS:
+            self.eat(TokenType.MINUS)
 
       # we expect the current token to be an integer
       right = self.current_token
-      self.eat(INTEGER)
+      self.eat(TokenType.INTEGER)
 
-      result = left.value + right.value
-      return result
+      match op.type:
+         case TokenType.PLUS:
+            return left.value + right.value 
+         case TokenType.MINUS:
+            return left.value - right.value
 
 
 def main():

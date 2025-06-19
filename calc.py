@@ -35,9 +35,31 @@ class Interpreter(object):
     self.pos = 0
     # current token instance
     self.current_token = None
+    self.current_char = self.text[self.pos]
 
   def error(self):
     raise Exception('Error parsing input')
+  
+  def advance(self):
+      """Advance the 'pos' pointer and set the 'current_char' variable."""
+      self.pos += 1
+      if self.pos > len(self.text) - 1:
+          self.current_char = None  # Indicates end of input
+      else:
+          self.current_char = self.text[self.pos]
+
+  def integer(self):
+     result = ''
+
+     while self.current_char is not None and self.current_char.isdigit():
+        result += self.current_char
+        self.advance() 
+    
+     return int(result)
+
+  def skip_white_space(self):
+     while self.current_char is not None and self.current_char.isspace():
+        self.advance()
 
   def get_next_token(self):
       """Lexical analyzer (also known as scanner or tokenizer)
@@ -45,36 +67,26 @@ class Interpreter(object):
       This method is responsible for breaking a sentence
       apart into tokens. One token at a time.
       """
-      text = self.text
-
-      # is self.pos index past the end of the self.text ?
-      # if so, then return EOF token because there is no more
-      # input left to convert into tokens
-      if self.pos > len(text) - 1:
-          return Token(EOF, None)
-
-      # get a character at the position self.pos and decide
-      # what token to create based on the single character
-      current_char = text[self.pos]
 
       # if the character is a digit then convert it to
       # integer, create an INTEGER token, increment self.pos
       # index to point to the next character after the digit,
       # and return the INTEGER token
+      if self.current_char == None:
+         return Token(EOF, None)
 
-      if current_char == ' ':
-         self.pos += 1
+      if self.current_char == ' ':
+         self.skip_white_space()
          return self.get_next_token()
       
-      if current_char.isdigit():
-          token = Token(INTEGER, int(current_char))
-          self.pos += 1
-          return token
+      if self.current_char.isdigit():
+          return Token(INTEGER, self.integer())
+        
 
-      if current_char == '+':
-          token = Token(PLUS, current_char)
-          self.pos += 1
-          return token
+      if self.current_char == '+':
+          self.advance()
+          return Token(PLUS, self.current_char)
+      
 
 
       self.error()
@@ -89,44 +101,25 @@ class Interpreter(object):
       else:
           self.error()
 
-  
-  def get_number(self) -> int:
-     # keep eating tokens until we no longer find integers.
-     number_str = ''
-     if self.pos == 0:
-        self.current_token = self.get_next_token()
-
-     try: 
-        while True:
-          digit = self.current_token
-          self.eat(INTEGER)
-          number_str += str(digit.value)
-     except:
-        return Token(INTEGER, eval(number_str))
-        
-
 
   def expr(self):
       """expr -> INTEGER PLUS INTEGER"""
       # set current token to the first token taken from the input
 
-      left = self.get_number()
+      self.current_token = self.get_next_token()
+
+      # we expect the current token to be an integer
+      left = self.current_token
+      self.eat(INTEGER)
 
       # we expect the current token to be a '+' token
       op = self.current_token
       self.eat(PLUS)
 
-      # we expect the current token to be a single-digit integer
-      right = self.get_number()
+      # we expect the current token to be an integer
+      right = self.current_token
+      self.eat(INTEGER)
 
-
-      # after the above call the self.current_token is set to
-      # EOF token
-
-      # at this point INTEGER PLUS INTEGER sequence of tokens
-      # has been successfully found and the method can just
-      # return the result of adding two integers, thus
-      # effectively interpreting client input
       result = left.value + right.value
       return result
 
@@ -148,9 +141,9 @@ def main():
 
 
 def test(): 
-   interpreter = Interpreter('23 + 21   ')
+   interpreter = Interpreter('23 + 21')
    print(interpreter.expr())
 
 
 if __name__ == '__main__':
-    main()
+    test()

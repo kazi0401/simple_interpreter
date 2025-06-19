@@ -1,0 +1,23 @@
+1) What is an interpreter?
+	An interpreter is a computer program that processes and executes a source program directly,
+	without translating it into a machine-friendly language first.
+
+2) What is a compiler
+	A compiler is a computer program that processes and executes a source program by first
+	translating it into machine-code first.
+
+3) What is the difference between an interpreter and a compiler?
+	Interpreters translate code line by line at runtime, while compilers 'build' the program 
+	into a machine-ready executable. 
+
+4) What is a token?
+	A token is an object that has a type and a value. '3' would tokenize to Token(INTEGER, 3).
+
+5) What is the name of the process that breaks input into tokens?
+	Lexical analysis.
+
+6) What is the part of the interpreter that does lexical analysis called?
+	Lexical analyzer, lexer for short
+
+7) What are the other common names for that part of an interpreter or a compiler?
+	Scanner, tokenizer

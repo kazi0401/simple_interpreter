@@ -9,6 +9,8 @@ class TokenType(Enum):
    INTEGER = 'INTEGER'
    PLUS = 'PLUS'
    MINUS = 'MINUS'
+   MULT = 'MULT'
+   DIV = 'DIV'
    EOF = 'EOF'
 
 
@@ -88,7 +90,6 @@ class Interpreter(object):
       
       if self.current_char.isdigit():
           return Token(TokenType.INTEGER, self.integer())
-        
 
       if self.current_char == '+':
           self.advance()
@@ -97,6 +98,14 @@ class Interpreter(object):
       if self.current_char == '-':
          self.advance()
          return Token(TokenType.MINUS, self.current_char)
+      
+      if self.current_char == '*':
+         self.advance()
+         return Token(TokenType.MULT, self.current_char)
+      
+      if self.current_char == '/':
+         self.advance()
+         return Token(TokenType.DIV, self.current_char)
       
 
 
@@ -111,35 +120,54 @@ class Interpreter(object):
           self.current_token = self.get_next_token()
       else:
           self.error()
-
-
-  def expr(self):
-      """expr -> INTEGER PLUS INTEGER"""
-      # set current token to the first token taken from the input
-
-      self.current_token = self.get_next_token()
-
-      # we expect the current token to be an integer
-      left = self.current_token
-      self.eat(TokenType.INTEGER)
-
-      # we expect the current token to be a '+' token
-      op = self.current_token
+  
+  def eat_op_type(self, op: Token):
       match op.type:
-         case TokenType.PLUS: 
-            self.eat(TokenType.PLUS)
-         case TokenType.MINUS:
-            self.eat(TokenType.MINUS)
+        case TokenType.PLUS: 
+          self.eat(TokenType.PLUS)
+        case TokenType.MINUS:
+          self.eat(TokenType.MINUS)
+        case TokenType.MULT:
+          self.eat(TokenType.MULT)
+        case TokenType.DIV:
+          self.eat(TokenType.DIV)
+     
 
-      # we expect the current token to be an integer
-      right = self.current_token
-      self.eat(TokenType.INTEGER)
-
+  def calculate(self, left: Token, op: Token, right: Token):
       match op.type:
          case TokenType.PLUS:
             return left.value + right.value 
          case TokenType.MINUS:
             return left.value - right.value
+         case TokenType.MULT:
+            return left.value * right.value 
+         case TokenType.DIV:
+            return left.value / right.value
+     
+     
+  def expr(self):
+      """expr -> INTEGER PLUS INTEGER"""
+      # set current token to the first token taken from the input
+      self.current_token = self.get_next_token()
+
+      # Gather the first operand (either single or multi digit)
+      left = self.current_token
+      self.eat(TokenType.INTEGER)
+
+      while self.current_token.type != TokenType.EOF:
+        # Gather the operator (plus, minus, mult, div)
+        op = self.current_token
+        self.eat_op_type(op)
+
+        # Gather the second operand 
+        right = self.current_token
+        self.eat(TokenType.INTEGER)
+
+        # calculate
+        result = left = Token(TokenType.INTEGER, self.calculate(left, op, right))
+
+      return result.value
+
 
 
 def main():
@@ -158,10 +186,5 @@ def main():
         print(result)
 
 
-def test(): 
-   interpreter = Interpreter('23 + 21')
-   print(interpreter.expr())
-
-
 if __name__ == '__main__':
-    test()
+    main()

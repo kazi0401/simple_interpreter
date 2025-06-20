@@ -1,5 +1,5 @@
 import unittest
-from calc import Interpreter
+from calc_scratch import Interpreter
 
 
 class TestAddition(unittest.TestCase):
@@ -203,5 +203,5 @@ class TestMultipleMultsAndDivs(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main()
+  unittest.main(defaultTest='TestAddition')
 

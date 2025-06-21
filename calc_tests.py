@@ -95,7 +95,7 @@ class TestDivision(unittest.TestCase):
 
   def test_division_result_fraction(self):
       input = '7/2'
-      expected = 3.5 
+      expected = 3
       self.assertEqual(Interpreter(input).expr(), expected)
 
   def test_division_large_numbers(self):
@@ -192,8 +192,8 @@ class TestMultipleMultsAndDivs(unittest.TestCase):
 
   def test_division_that_truncates(self):
       input = '7/3'
-      expected = 2.33333333333  
-      self.assertAlmostEqual(Interpreter(input).expr(), expected)
+      expected = 2
+      self.assertEqual(Interpreter(input).expr(), expected)
 
   def test_large_numbers_multiplication_and_division(self):
       input = '1000*1000/100'
@@ -203,5 +203,5 @@ class TestMultipleMultsAndDivs(unittest.TestCase):
 
 
 if __name__ == '__main__':
-  unittest.main(defaultTest='TestAddition')
+  unittest.main()
 

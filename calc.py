@@ -142,7 +142,7 @@ class Interpreter(object):
          case TokenType.MULT:
             return left.value * right.value 
          case TokenType.DIV:
-            return left.value / right.value
+            return left.value // right.value
      
      
   def expr(self):

@@ -1,0 +1,9 @@
+1) What is a syntax diagram?
+	A syntax diagram is a diagram that graphically represents the syntax rules for a programming language.
+
+
+2) What is syntax analysis?
+	Syntax anaylsis is the same as parsing, which is the process of recongizing phrases in a stream of tokens. 
+
+3) What is a syntax analyzer?
+	Syntax analyzers are parsers, which carry out the process of parsing. 

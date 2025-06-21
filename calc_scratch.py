@@ -38,7 +38,9 @@ class Interpreter:
     for pos in range(pos, len(self.text)):
       if self.text[pos].isdigit():
         result += self.text[pos]
-      else: break
+      else: 
+        pos -= 1
+        break
 
     return pos, int(result) 
     
@@ -47,13 +49,25 @@ class Interpreter:
 
     while position < len(self.text):
       # If it's not a digit or an operator, we just keep iterating
-      # Implicitly skips white spaces
+      char = self.text[position]
 
-      if self.text[position].isdigit():
-        position, integer = self.tokenize_integer(position)
-        yield Token(TokenType.INTEGER, integer)
-      if self.text[position] == '+':
-        yield Token(TokenType.PLUS, '+')
+      match char:
+        case char if char.isdigit():
+          position, integer = self.tokenize_integer(position)
+          yield Token(TokenType.INTEGER, integer)
+        
+
+        case '+':
+          yield Token(TokenType.PLUS, '+')
+        case '-':
+          yield Token(TokenType.MINUS, '-')
+        case '*':
+          yield Token(TokenType.MULT, '*')
+        case '/':
+          yield Token(TokenType.DIV, '/')
+
+        case char if char.isspace():
+          pass # do nothing if space
       
       position += 1
 
@@ -78,12 +92,12 @@ class Interpreter:
       case TokenType.MULT:
         result = left.value * right.value 
       case TokenType.DIV:
-        result = left.value / right.value
+        result = left.value // right.value
     
     return Token(TokenType.INTEGER, result)
   
   def expr(self):
-      
+    result = None
     tokens = list(self.tokenizer())
 
     left = tokens[0]
@@ -102,11 +116,22 @@ class Interpreter:
       result = left = self.calculate(left, operator, right)
     
     return result.value
+  
+
+def main():
+  while True:
+    text = input('calc>')
+
+
+    if not text: continue 
+    if text == 'quit': break 
+
+    interpreter = Interpreter(text)
+    print(interpreter.expr())
 
     
 
 
 
 if __name__ == '__main__':
-  c = Interpreter('   12+11    ').expr()
-  print(c)
+  main()
